@@ -6,14 +6,11 @@ const errorHandlerLoader = async (app) => {
   });
 
   app.use((err, req, res, next) => {
-    res.locals.error.message =
-      req.app.get("env") === "development" ? err.message : "error";
+    res.locals.message = err.message;
     res.locals.error = req.app.get("env") === "development" ? err : {};
-    res.locals.error.stack =
-      req.app.get("env") === "development" ? err.stack : {};
 
     res.status(err.status || 500);
-    res.json({ message: res.locals.error });
+    res.json({ message: err });
   });
 };
 module.exports = errorHandlerLoader;
