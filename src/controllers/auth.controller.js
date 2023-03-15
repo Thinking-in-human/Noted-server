@@ -1,23 +1,48 @@
+const jwt = require("jsonwebtoken");
+const CONFIG = require("../config/constants");
+
 const User = require("../models/User");
 
 exports.signIn = async function (req, res, next) {
-  //email이 db에 있는지 확인 -> find 쿼리
-  //없으면 db에 추가
-  //있으면 Token 발행
   try {
     const { email, avatarImgURL } = req.body;
-    const foundUserByEmail = await User.findOne({ email });
-    console.log(email, foundUserByEmail, avatarImgURL);
-    if (!foundUserByEmail) {
+    const member = await User.findOne({ email });
+
+    if (!member) {
       await User.create({ email, avatarImgURL });
-      console.log("created!");
-    } else {
-      console.log("exist!");
     }
 
-    res.json("signup");
+    const user = await User.findOne({ email });
+    const accessToken = jwt.sign({ id: user._id }, CONFIG.JWT_SECRET, {
+      expiresIn: "1h",
+      algorithm: "HS256",
+    });
+    const refreshToken = jwt.sign({}, CONFIG.JWT_SECRET, {
+      expiresIn: "14d",
+      algorithm: "HS256",
+    });
+
+    await User.findByIdAndUpdate(user._id, { refreshToken });
+
+    res
+      .status(201)
+      .cookie("accessToken", accessToken, {
+        maxAge: 1000 * 60 * 60,
+        httpOnly: true,
+      })
+      .cookie("refreshToken", refreshToken, {
+        maxAge: 1000 * 60 * 60 * 24,
+        httpOnly: true,
+      })
+      .json({ result: "success" });
   } catch (error) {
-    next(error);
+    res.json({
+      result: "error",
+      error: {
+        message: "Unauthorized user",
+        code: 401,
+      },
+    });
   }
 };
 

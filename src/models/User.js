@@ -7,6 +7,7 @@ const userSchema = Schema(
     email: { type: String, trim: true, unique: true, required: true },
     avatarImgURL: { type: String, required: true },
     pdfDocuments: [{ type: Schema.Types.ObjectId, default: [], ref: "Pdf" }],
+    refreshToken: { type: String, default: "" },
   },
   {
     versionKey: false,
