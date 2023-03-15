@@ -4,7 +4,7 @@ const { MONGODB } = require("../config/constants");
 const mongooseLoader = async () => {
   try {
     await mongoose.connect(MONGODB);
-    mongoose.set("strictQuery", false);
+    mongoose.set("strictQuery", true);
     console.info("connected to database");
   } catch (error) {
     console.error("connected error");
