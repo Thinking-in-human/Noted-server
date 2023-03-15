@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
-const { MONGODB } = require("../config/constants");
+const CONFIG = require("../config/constants");
 
 const mongooseLoader = async () => {
   try {
-    await mongoose.connect(MONGODB);
+    await mongoose.connect(CONFIG.MONGODB);
     mongoose.set("strictQuery", true);
     console.info("connected to database");
   } catch (error) {
