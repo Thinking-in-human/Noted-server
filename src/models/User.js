@@ -2,11 +2,12 @@ const mongoose = require("mongoose");
 
 const { Schema } = mongoose;
 
-const userSchema = new mongoose.Schema(
+const userSchema = Schema(
   {
     email: { type: String, trim: true, unique: true, required: true },
-    avatarImgUrl: { type: String, required: true },
-    pdfDocuments: { type: Schema.Types.ObjectId, ref: "Pdf" },
+    avatarImgURL: { type: String, required: true },
+    pdfDocuments: [{ type: Schema.Types.ObjectId, default: [], ref: "Pdf" }],
+    refreshToken: { type: String, default: "" },
   },
   {
     versionKey: false,

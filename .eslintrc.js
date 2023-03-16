@@ -14,6 +14,7 @@ module.exports = {
   rules: {
     semi: "warn",
     "no-unused-vars": "warn",
+    "import/no-extraneous-dependencies": "off",
     "react/prop-types": "off",
     "react/jsx-props-no-spreading": "off",
     "react/self-closing-comp": "off",
