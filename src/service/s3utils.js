@@ -63,7 +63,7 @@ const getDocumentInS3 = async (documentId, next) => {
 
     const pdfInS3 = new GetObjectCommand({
       Bucket: CONFIG.S3_BUCKET_NAME,
-      Key: documentId,
+      Key: `documents/${documentId}.pdf`,
     });
 
     const response = await s3.send(pdfInS3);
