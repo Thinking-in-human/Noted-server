@@ -39,7 +39,7 @@ const uploadDocumentInS3 = async (documentId, document, next) => {
       client: s3,
       params: {
         Bucket: CONFIG.S3_BUCKET_NAME,
-        Key: documentId,
+        Key: `documents/${documentId}.pdf`,
         Body: document,
       },
     });
