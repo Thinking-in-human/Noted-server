@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const Pdf = require("../models/Pdf");
 
 exports.getAll = async (req, res, next) => {
   try {
