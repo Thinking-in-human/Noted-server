@@ -1,9 +1,9 @@
 const jwt = require("jsonwebtoken");
-const CONFIG = require("../config/constants");
 
+const CONFIG = require("../config/constants");
 const User = require("../models/User");
 
-exports.signIn = async function (req, res, next) {
+exports.signIn = async (req, res, next) => {
   try {
     const { email, avatarImgURL } = req.body;
     const member = await User.findOne({ email });
@@ -12,7 +12,7 @@ exports.signIn = async function (req, res, next) {
       await User.create({ email, avatarImgURL });
     }
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).lean().exec();
     const accessToken = jwt.sign({ id: user._id }, CONFIG.JWT_SECRET, {
       expiresIn: "1h",
       algorithm: "HS256",
@@ -36,13 +36,10 @@ exports.signIn = async function (req, res, next) {
       })
       .json({ result: "success" });
   } catch (error) {
-    res.json({
-      result: "error",
-      error: {
-        message: "Unauthorized user",
-        code: 401,
-      },
-    });
+    error.message = "Internal Server Error";
+    error.status = 500;
+
+    next(error);
   }
 };
 
