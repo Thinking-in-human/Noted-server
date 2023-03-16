@@ -3,7 +3,7 @@ const debug = require("debug")("noted-server:server");
 const http = require("http");
 const CONFIG = require("../src/config/constants");
 
-const port = normalizePort(CONFIG.PORT || "3000");
+const port = normalizePort(CONFIG.PORT || "4000");
 app.set("port", port);
 
 const server = http.createServer(app);
