@@ -1,7 +1,8 @@
-const app = require("../app");
-const debug = require("debug")("noted-server:server");
 const http = require("http");
+const debug = require("debug")("noted-server:server");
+
 const CONFIG = require("../src/config/constants");
+const app = require("../app");
 
 const port = normalizePort(CONFIG.PORT || "4000");
 app.set("port", port);
