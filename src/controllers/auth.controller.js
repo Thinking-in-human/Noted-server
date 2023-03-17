@@ -35,7 +35,7 @@ exports.signIn = async (req, res, next) => {
   }
 };
 
-exports.signOut = async (req, res, next) => {
+exports.signOut = async function (req, res, next) {
   try {
     // write your code ..
   } catch (error) {
