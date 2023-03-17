@@ -1,7 +1,5 @@
-const jwt = require("jsonwebtoken");
-
-const CONFIG = require("../config/constants");
 const User = require("../models/User");
+const jwt = require("../service/jwtUtils");
 
 exports.signIn = async (req, res, next) => {
   try {
@@ -13,14 +11,8 @@ exports.signIn = async (req, res, next) => {
     }
 
     const user = await User.findOne({ email }).lean().exec();
-    const accessToken = jwt.sign({ id: user._id }, CONFIG.JWT_SECRET, {
-      expiresIn: "1h",
-      algorithm: "HS256",
-    });
-    const refreshToken = jwt.sign({}, CONFIG.JWT_SECRET, {
-      expiresIn: "14d",
-      algorithm: "HS256",
-    });
+    const accessToken = jwt.sign(user);
+    const refreshToken = jwt.refresh();
 
     await User.findByIdAndUpdate(user._id, { refreshToken });
 
@@ -43,9 +35,9 @@ exports.signIn = async (req, res, next) => {
   }
 };
 
-exports.signOut = async function (req, res, next) {
+exports.signOut = async (req, res, next) => {
   try {
-    //write your code ..
+    // write your code ..
   } catch (error) {
     next(error);
   }
