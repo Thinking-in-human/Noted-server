@@ -41,7 +41,6 @@ exports.refreshVerify = async (token, id) => {
         jwt.verify(token, CONFIG.JWT_SECRET);
         return true;
       } catch (error) {
-        console.log("false");
         return false;
       }
     } else {
