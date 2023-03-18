@@ -1,37 +1,50 @@
 const jwt = require("jsonwebtoken");
 const createError = require("http-errors");
 
-const { sign, verify, refreshVerify } = require("../service/jwtUtils");
+const ERRORMESSAGE = require("../constants/error");
+const {
+  sign,
+  accessTokenVerify,
+  refreshTokenVerify,
+} = require("../service/jwtUtils");
 
 exports.verfityToken = async (req, res, next) => {
   try {
     const { accessToken, refreshToken } = req.cookies;
 
     if (accessToken && refreshToken) {
-      const authResult = await verify(accessToken);
+      const authResult = await accessTokenVerify(accessToken);
       const decoded = jwt.decode(accessToken);
-      const refreshResult = await refreshVerify(refreshToken, decoded.id);
+      const refreshResult = await refreshTokenVerify(
+        refreshToken,
+        decoded.id,
+        next
+      );
 
-      if (authResult.type === false && authResult.message === "jwt expired") {
-        if (refreshResult === false) {
-          return next(createError(401, "권한이 없습니다."));
+      if (!authResult.type && authResult.message === "jwt expired") {
+        if (!refreshResult) {
+          return next(createError(401, ERRORMESSAGE.ERROR_401));
         }
 
         const newAccessToken = sign(decoded.id);
 
-        return res.json({
-          result: "access token 발급",
-          accessToken: newAccessToken,
-          refreshToken,
+        res.status(201).cookie("accessToken", newAccessToken, {
+          maxAge: 1000 * 60 * 60,
+          httpOnly: true,
         });
+
+        return next();
       }
 
-      req.user = authResult.id;
-      next();
+      req.user = decoded.id;
+      return next();
     }
 
-    return next(createError(401, "쿠키에 토큰이 없습니다."));
+    return next(createError(401, ERRORMESSAGE.ERROR_401));
   } catch (error) {
-    next(error);
+    error.message = ERRORMESSAGE.ERROR_401;
+    error.status = 401;
+
+    return next(error);
   }
 };

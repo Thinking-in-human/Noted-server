@@ -1,7 +1,7 @@
 const { S3, GetObjectCommand } = require("@aws-sdk/client-s3");
 const { Upload } = require("@aws-sdk/lib-storage");
 
-const CONFIG = require("../config/constants");
+const CONFIG = require("../constants/config");
 
 const s3 = new S3({
   region: CONFIG.S3_REGION,

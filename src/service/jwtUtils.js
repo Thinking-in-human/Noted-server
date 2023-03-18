@@ -1,7 +1,8 @@
 const jwt = require("jsonwebtoken");
 
-const CONFIG = require("../config/constants");
+const CONFIG = require("../constants/config");
 const User = require("../models/User");
+const ERRORMESSAGE = require("../constants/error");
 
 exports.sign = (user) => {
   return jwt.sign({ id: user._id }, CONFIG.JWT_SECRET, {
@@ -17,10 +18,9 @@ exports.refresh = () => {
   });
 };
 
-exports.verify = (token) => {
-  let decode = null;
+exports.accessTokenVerify = (token) => {
   try {
-    decode = jwt.verify(token, CONFIG.JWT_SECRET);
+    const decode = jwt.verify(token, CONFIG.JWT_SECRET);
     return {
       type: true,
       id: decode.id,
@@ -33,7 +33,7 @@ exports.verify = (token) => {
   }
 };
 
-exports.refreshVerify = async (token, id) => {
+exports.refreshTokenVerify = async (token, id, next) => {
   try {
     const data = await User.findById(id);
     if (token === data.refreshToken) {
@@ -43,10 +43,12 @@ exports.refreshVerify = async (token, id) => {
       } catch (error) {
         return false;
       }
-    } else {
-      return false;
     }
-  } catch (error) {
     return false;
+  } catch (error) {
+    error.message = ERRORMESSAGE.ERROR_500;
+    error.status = 500;
+
+    next(error);
   }
 };

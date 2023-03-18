@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const jwt = require("../service/jwtUtils");
+const ERRORMESSAGE = require("../constants/error");
 
 exports.signIn = async (req, res, next) => {
   try {
@@ -26,9 +27,9 @@ exports.signIn = async (req, res, next) => {
         maxAge: 1000 * 60 * 60 * 24,
         httpOnly: true,
       })
-      .json({ result: "success" });
+      .json({ result: "success", userID: user._id });
   } catch (error) {
-    error.message = "Internal Server Error";
+    error.message = ERRORMESSAGE.ERROR_500;
     error.status = 500;
 
     next(error);
