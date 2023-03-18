@@ -3,7 +3,7 @@ const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const cors = require("cors");
 
-const middlewareLoader = async (app) => {
+const expressLoader = async (app) => {
   app.use(
     cors({
       origin: "http://localhost:3000",
@@ -16,4 +16,4 @@ const middlewareLoader = async (app) => {
   app.use(cookieParser());
 };
 
-module.exports = middlewareLoader;
+module.exports = expressLoader;

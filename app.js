@@ -1,10 +1,10 @@
 const express = require("express");
-const expressLoader = require("./src/loaders/index");
+const appLoader = require("./src/loaders/index");
 
 const app = express();
 
 (async () => {
-  await expressLoader(app);
+  await appLoader(app);
 })();
 
 module.exports = app;

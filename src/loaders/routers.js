@@ -1,11 +1,12 @@
 const indexRouter = require("../routes/index");
 const authRouter = require("../routes/auth");
 const usersRouter = require("../routes/users");
+const { verfityToken } = require("../middlewares/verifyToken");
 
 const routerLoader = async (app) => {
   app.use("/", indexRouter);
   app.use("/auth", authRouter);
-  app.use("/users", usersRouter);
+  app.use("/users", verfityToken, usersRouter);
 };
 
 module.exports = routerLoader;
