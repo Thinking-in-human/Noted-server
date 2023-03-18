@@ -33,7 +33,7 @@ const s3ConfigSetup = async (next) => {
 
 const uploadDocumentInS3 = async (documentId, document, next) => {
   try {
-    s3ConfigSetup();
+    s3ConfigSetup(next);
 
     const pdfUpload = new Upload({
       client: s3,
