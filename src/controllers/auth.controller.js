@@ -36,10 +36,19 @@ exports.signIn = async (req, res, next) => {
   }
 };
 
-exports.signOut = async function (req, res, next) {
+exports.signOut = (req, res, next) => {
   try {
-    // write your code ..
+    Object.keys(req.cookies).forEach((cookieName) => {
+      res.clearCookie(cookieName, { httpOnly: true });
+    });
+
+    res.json({
+      result: "ok",
+    });
   } catch (error) {
+    error.message = ERRORMESSAGE.ERROR_500;
+    error.status = 500;
+
     next(error);
   }
 };
