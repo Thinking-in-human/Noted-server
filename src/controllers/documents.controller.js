@@ -6,7 +6,6 @@ const ERRORMESSAGE = require("../constants/error");
 exports.getAll = async (req, res, next) => {
   try {
     const { userId } = req.params;
-    console.log(userId);
     const userInfo = await User.findById(userId)
       .populate("pdfDocuments")
       .lean()
@@ -26,13 +25,13 @@ exports.getAll = async (req, res, next) => {
 
 exports.getDocument = async (req, res, next) => {
   try {
-    const { documentId, userId } = req.params;
+    const { userId, documentId } = req.params;
 
-    const pdfDocument = await getDocumentInS3(documentId, userId, next);
+    const pdfDocument = await getDocumentInS3(userId, documentId, next);
 
     res.set({
       "Content-Type": "application/pdf",
-      "Content-Length": pdfDocument?.length,
+      "Content-Length": pdfDocument.length,
     });
 
     res.send(pdfDocument);
@@ -45,26 +44,20 @@ exports.getDocument = async (req, res, next) => {
 };
 
 exports.createDocument = async (req, res, next) => {
-  console.log("server_Post");
-  console.log("req", req.files);
   const { userId } = req.params;
   const { file } = req.files;
-
-  // const userId = req.user;
   const { name, data } = file;
-  // save meta data (pdf) in mongodb
+
   await Pdf.create({ title: name, lastModifiedDate: new Date() });
   const createdPdf = await Pdf.findOne({ title: name }).lean().exec();
-  /* eslint-disabled */
-  const documentId = String(createdPdf._id);
-  console.log("documentId", createdPdf, documentId);
-  // uploading to S3
-  await uploadDocumentInS3(documentId, userId, data, next);
 
-  // userid mongodb에서 찾아서 pdf documents 업데이트
+  const documentId = String(createdPdf._id);
+
+  await uploadDocumentInS3(userId, documentId, data, next);
   const userInfo = await User.findById(userId);
-  console.log(userInfo);
+
   userInfo.pdfDocuments.push(documentId);
+
   await userInfo.save();
 
   res.json({

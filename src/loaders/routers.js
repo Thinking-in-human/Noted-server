@@ -6,9 +6,7 @@ const { verifyToken } = require("../middlewares/verifyToken");
 const routerLoader = async (app) => {
   app.use("/", indexRouter);
   app.use("/auth", authRouter);
-
-  // app.use("/users", verifyToken, usersRouter);
-  app.use("/users", usersRouter);
+  app.use("/users", verifyToken, usersRouter);
 };
 
 module.exports = routerLoader;

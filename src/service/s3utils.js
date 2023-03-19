@@ -34,7 +34,7 @@ const s3ConfigSetup = async (next) => {
   }
 };
 
-const uploadDocumentInS3 = async (documentId, userId, document, next) => {
+const uploadDocumentInS3 = async (userId, documentId, document, next) => {
   try {
     await s3ConfigSetup(next);
 
@@ -60,10 +60,9 @@ const uploadDocumentInS3 = async (documentId, userId, document, next) => {
   }
 };
 
-const getDocumentInS3 = async (documentId, userId, next) => {
+const getDocumentInS3 = async (userId, documentId, next) => {
   try {
     await s3ConfigSetup(next);
-    console.log(documentId, userId);
 
     const pdfInS3 = new GetObjectCommand({
       Bucket: CONFIG.S3_BUCKET_NAME,
@@ -77,7 +76,6 @@ const getDocumentInS3 = async (documentId, userId, next) => {
 
     return buffer;
   } catch (error) {
-    console.log("error!!!", error);
     error.message = ERRORMESSAGE.ERROR_500;
     error.status = 500;
 

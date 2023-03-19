@@ -2,13 +2,10 @@ const mongoose = require("mongoose");
 
 const { Schema } = mongoose;
 
-const pdfSchema = new mongoose.Schema(
+const pdfSchema = Schema(
   {
-    // title: { type: String, required: true, match: /^[a-zA-Z0-9_-]+$/ },
-    title: { type: String, required: true },
-
+    title: { type: String, required: true, match: /^[a-zA-Z0-9_-]+$/ },
     lastModifiedDate: { type: Date, required: true },
-    // storageUrl: { type: String, required: true },
   },
   {
     versionKey: false,
