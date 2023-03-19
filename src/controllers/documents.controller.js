@@ -17,7 +17,7 @@ exports.getAll = async (req, res, next) => {
       documents: userInfo.pdfDocuments,
     });
   } catch (error) {
-    error.message = "Internal Server Error";
+    error.message = ERRORMESSAGE.ERROR_500;
     error.status = 500;
 
     next(error);
