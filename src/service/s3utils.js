@@ -32,15 +32,15 @@ const s3ConfigSetup = async (next) => {
   }
 };
 
-const uploadDocumentInS3 = async (documentTitle, document, next) => {
+const uploadDocumentInS3 = async (userId, documentId, document, next) => {
   try {
-    await s3ConfigSetup();
+    await s3ConfigSetup(next);
 
     const pdfUpload = new Upload({
       client: s3,
       params: {
         Bucket: CONFIG.S3_BUCKET_NAME,
-        Key: `documents/${documentTitle}.pdf`,
+        Key: `users/${userId}/documents/${documentId}.pdf`,
         Body: document,
       },
     });
@@ -58,13 +58,13 @@ const uploadDocumentInS3 = async (documentTitle, document, next) => {
   }
 };
 
-const getDocumentInS3 = async (documentTitle, next) => {
+const getDocumentInS3 = async (userId, documentId, next) => {
   try {
     await s3ConfigSetup(next);
 
     const pdfInS3 = new GetObjectCommand({
       Bucket: CONFIG.S3_BUCKET_NAME,
-      Key: `documents-${documentTitle}.pdf`,
+      Key: `users/${userId}/documents/${documentId}.pdf`,
     });
 
     const readableStream = await s3.send(pdfInS3);

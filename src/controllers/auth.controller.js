@@ -27,7 +27,7 @@ exports.signIn = async (req, res, next) => {
         maxAge: 1000 * 60 * 60 * 24,
         httpOnly: true,
       })
-      .json({ result: "success", userID: user._id });
+      .json({ result: "success", userId: user._id });
   } catch (error) {
     error.message = ERRORMESSAGE.ERROR_500;
     error.status = 500;

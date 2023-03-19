@@ -25,10 +25,8 @@ exports.getAll = async (req, res, next) => {
 
 exports.getDocument = async (req, res, next) => {
   try {
-    const { documentTitle } = req.params;
-
-    const pdfDocument = await getDocumentInS3(documentTitle, next);
-
+    const { userId, documentId } = req.params;
+    const pdfDocument = await getDocumentInS3(userId, documentId, next);
     res.set({
       "Content-Type": "application/pdf",
       "Content-Length": pdfDocument.length,
