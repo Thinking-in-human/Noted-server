@@ -2,6 +2,7 @@ const { S3, GetObjectCommand } = require("@aws-sdk/client-s3");
 const { Upload } = require("@aws-sdk/lib-storage");
 
 const CONFIG = require("../constants/config");
+const ERRORMESSAGE = require("../constants/error");
 
 const s3 = new S3({
   region: CONFIG.S3_REGION,
@@ -24,22 +25,22 @@ const s3ConfigSetup = async (next) => {
   try {
     await s3.putBucketCors(bucketParams);
   } catch (error) {
-    error.message = "Internal Server Error";
+    error.message = ERRORMESSAGE.ERROR_500;
     error.status = 500;
 
-    next(error);
+    return next(error);
   }
 };
 
-const uploadDocumentInS3 = async (documentId, document, next) => {
+const uploadDocumentInS3 = async (userId, documentId, document, next) => {
   try {
-    s3ConfigSetup();
+    await s3ConfigSetup(next);
 
     const pdfUpload = new Upload({
       client: s3,
       params: {
         Bucket: CONFIG.S3_BUCKET_NAME,
-        Key: `documents/${documentId}.pdf`,
+        Key: `users/${userId}/documents/${documentId}.pdf`,
         Body: document,
       },
     });
@@ -50,30 +51,32 @@ const uploadDocumentInS3 = async (documentId, document, next) => {
 
     await pdfUpload.done();
   } catch (error) {
-    error.message = "Internal Server Error";
+    error.message = ERRORMESSAGE.ERROR_500;
     error.status = 500;
 
-    next(error);
+    return next(error);
   }
 };
 
-const getDocumentInS3 = async (documentId, next) => {
+const getDocumentInS3 = async (userId, documentId, next) => {
   try {
-    s3ConfigSetup();
+    await s3ConfigSetup(next);
 
     const pdfInS3 = new GetObjectCommand({
       Bucket: CONFIG.S3_BUCKET_NAME,
-      Key: `documents/${documentId}.pdf`,
+      Key: `users/${userId}/documents/${documentId}.pdf`,
     });
 
-    const response = await s3.send(pdfInS3);
+    const readableStream = await s3.send(pdfInS3);
+    const arrayBuffer = await readableStream.Body.transformToByteArray();
+    const buffer = Buffer.from(arrayBuffer);
 
-    return response.Body;
+    return buffer;
   } catch (error) {
-    error.message = "Internal Server Error";
+    error.message = ERRORMESSAGE.ERROR_500;
     error.status = 500;
 
-    next(error);
+    return next(error);
   }
 };
 
