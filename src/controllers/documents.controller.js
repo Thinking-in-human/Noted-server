@@ -13,7 +13,7 @@ exports.getAll = async (req, res, next) => {
 
     res.json({
       result: "ok",
-      documents: userInfo.pdfDocuments,
+      documents: userInfo?.pdfDocuments,
     });
   } catch (error) {
     error.message = ERRORMESSAGE.ERROR_500;
@@ -26,12 +26,11 @@ exports.getAll = async (req, res, next) => {
 exports.getDocument = async (req, res, next) => {
   try {
     const { userId, documentId } = req.params;
-
     const pdfDocument = await getDocumentInS3(userId, documentId, next);
 
     res.set({
       "Content-Type": "application/pdf",
-      "Content-Length": pdfDocument.length,
+      "Content-Length": pdfDocument?.length,
     });
 
     res.send(pdfDocument);
@@ -54,11 +53,11 @@ exports.createDocument = async (req, res, next) => {
   const documentId = String(createdPdf._id);
 
   await uploadDocumentInS3(userId, documentId, data, next);
-  const userInfo = await User.findById(userId);
-
-  userInfo.pdfDocuments.push(documentId);
-
-  await userInfo.save();
+  await User.findByIdAndUpdate(userId, {
+    $push: { pdfDocuments: documentId },
+  })
+    .lean()
+    .exec();
 
   res.json({
     result: "ok",

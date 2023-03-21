@@ -8,7 +8,7 @@ const {
   refreshTokenVerify,
 } = require("../service/jwtUtils");
 
-exports.verfityToken = async (req, res, next) => {
+exports.verifyToken = async (req, res, next) => {
   try {
     const { accessToken, refreshToken } = req.cookies;
 
