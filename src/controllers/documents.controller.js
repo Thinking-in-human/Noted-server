@@ -1,6 +1,6 @@
 const User = require("../models/User");
 const Pdf = require("../models/Pdf");
-const { getDocumentInS3 } = require("../service/s3utils");
+const { uploadDocumentInS3, getDocumentInS3 } = require("../service/s3utils");
 const ERRORMESSAGE = require("../constants/error");
 
 exports.getAll = async (req, res, next) => {
@@ -13,7 +13,7 @@ exports.getAll = async (req, res, next) => {
 
     res.json({
       result: "ok",
-      documents: userInfo.pdfDocuments,
+      documents: userInfo?.pdfDocuments,
     });
   } catch (error) {
     error.message = ERRORMESSAGE.ERROR_500;
@@ -27,9 +27,10 @@ exports.getDocument = async (req, res, next) => {
   try {
     const { userId, documentId } = req.params;
     const pdfDocument = await getDocumentInS3(userId, documentId, next);
+
     res.set({
       "Content-Type": "application/pdf",
-      "Content-Length": pdfDocument.length,
+      "Content-Length": pdfDocument?.length,
     });
 
     res.send(pdfDocument);
@@ -39,4 +40,27 @@ exports.getDocument = async (req, res, next) => {
 
     return next(error);
   }
+};
+
+exports.createDocument = async (req, res, next) => {
+  const { userId } = req.params;
+  const { file } = req.files;
+  const { name, data } = file;
+
+  await Pdf.create({ title: name, lastModifiedDate: new Date() });
+  const createdPdf = await Pdf.findOne({ title: name }).lean().exec();
+
+  const documentId = String(createdPdf._id);
+
+  await uploadDocumentInS3(userId, documentId, data, next);
+  await User.findByIdAndUpdate(userId, {
+    $push: { pdfDocuments: documentId },
+  })
+    .lean()
+    .exec();
+
+  res.json({
+    result: "ok",
+    documents: documentId,
+  });
 };
