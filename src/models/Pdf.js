@@ -4,7 +4,7 @@ const { Schema } = mongoose;
 
 const pdfSchema = Schema(
   {
-    title: { type: String, required: true },
+    title: { type: String, required: true, match: /^[a-zA-Z0-9_-]+$/ },
     lastModifiedDate: { type: Date, required: true },
   },
   {
