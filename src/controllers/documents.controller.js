@@ -32,7 +32,6 @@ exports.getDocument = async (req, res, next) => {
       "Content-Type": "application/pdf",
       "Content-Length": pdfDocument?.length,
     });
-
     res.send(pdfDocument);
   } catch (error) {
     error.message = ERRORMESSAGE.ERROR_500;

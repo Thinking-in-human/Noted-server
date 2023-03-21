@@ -83,7 +83,29 @@ const getDocumentInS3 = async (userId, documentId, next) => {
   }
 };
 
+const getFontInS3 = async (fontId, next) => {
+  try {
+    await s3ConfigSetup(next);
+
+    const fontInS3 = new GetObjectCommand({
+      Bucket: CONFIG.S3_BUCKET_NAME,
+      Key: `font/${fontId}.woff2`
+    });
+    const readableStream = await s3.send(fontInS3);
+    const arrayBuffer = await readableStream.Body.transformToByteArray();
+    const buffer = Buffer.from(arrayBuffer);
+
+    return buffer;
+  } catch (error) {
+    error.message = ERRORMESSAGE.ERROR_500;
+    error.status = 500;
+
+    return next(error);
+  }
+};
+
 module.exports = {
   uploadDocumentInS3,
   getDocumentInS3,
+  getFontInS3,
 };
