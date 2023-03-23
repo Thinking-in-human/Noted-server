@@ -21,4 +21,10 @@ module.exports = {
     "react/jsx-filename-extension": ["warn", { extensions: [".js"] }],
     "no-param-reassign": 0,
   },
+  "prettier/prettier": [
+    "error",
+    {
+      endOfLine: "auto",
+    },
+  ],
 };
