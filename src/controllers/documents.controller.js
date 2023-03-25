@@ -63,3 +63,21 @@ exports.createDocument = async (req, res, next) => {
     documents: documentId,
   });
 };
+
+exports.saveDocument = async (req, res, next) => {
+  try {
+    const { file } = req.files;
+    const { data } = file;
+    const { userId, documentId } = req.params;
+
+    await uploadDocumentInS3(userId, documentId, data, next);
+    await Pdf.findByIdAndUpdate(documentId, { lastModifiedDate: new Date() });
+
+    res.json({ result: "success" });
+  } catch (error) {
+    error.message = ERRORMESSAGE.ERROR_500;
+    error.status = 500;
+
+    return next(error);
+  }
+};
