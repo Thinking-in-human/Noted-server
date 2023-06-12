@@ -17,7 +17,7 @@ const bucketParams = {
   CORSConfiguration: {
     CORSRules: new Array({
       AllowedMethods: ["GET", "PUT"],
-      AllowedOrigins: ["http://localhost:4000"],
+      AllowedOrigins: [CONFIG.CLIENT_URL],
       MaxAgeSeconds: 3000,
     }),
   },
@@ -89,7 +89,7 @@ const getFontInS3 = async (fontId, next) => {
 
     const fontInS3 = new GetObjectCommand({
       Bucket: CONFIG.S3_BUCKET_NAME,
-      Key: `font/${fontId}.woff2`
+      Key: `font/${fontId}.woff2`,
     });
     const readableStream = await s3.send(fontInS3);
     const arrayBuffer = await readableStream.Body.transformToByteArray();

@@ -3,11 +3,12 @@ const cookieParser = require("cookie-parser");
 const fileUpload = require("express-fileupload");
 const logger = require("morgan");
 const cors = require("cors");
+const CONFIG = require("../constants/config");
 
 const expressLoader = async (app) => {
   app.use(
     cors({
-      origin: "http://localhost:3000",
+      origin: CONFIG.CLIENT_URL,
       credentials: true,
     })
   );
