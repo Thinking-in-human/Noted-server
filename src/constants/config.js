@@ -8,6 +8,7 @@ const CONFIG = {
   S3_SECRET_ACCESSKEY: process.env.S3_SECRET_ACCESSKEY,
   S3_BUCKET_NAME: process.env.S3_BUCKET_NAME,
   JWT_SECRET: process.env.JWT_SECRET,
+  CLIENT_URL: process.env.CLIENT_URL,
 };
 
 module.exports = CONFIG;

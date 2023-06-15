@@ -17,26 +17,23 @@ const bucketParams = {
   CORSConfiguration: {
     CORSRules: new Array({
       AllowedMethods: ["GET", "PUT"],
-      AllowedOrigins: ["http://localhost:4000"],
+      AllowedOrigins: [CONFIG.CLIENT_URL],
       MaxAgeSeconds: 3000,
     }),
   },
 };
 
-const s3ConfigSetup = async (next) => {
+const s3ConfigSetup = async () => {
   try {
     await s3.putBucketCors(bucketParams);
   } catch (error) {
-    error.message = ERRORMESSAGE.ERROR_500;
-    error.status = 500;
-
-    return next(error);
+    throw error;
   }
 };
 
-const uploadDocumentInS3 = async (userId, documentId, document, next) => {
+const uploadDocumentInS3 = async (userId, documentId, document) => {
   try {
-    await s3ConfigSetup(next);
+    await s3ConfigSetup();
 
     const pdfUpload = new Upload({
       client: s3,
@@ -53,16 +50,13 @@ const uploadDocumentInS3 = async (userId, documentId, document, next) => {
 
     await pdfUpload.done();
   } catch (error) {
-    error.message = ERRORMESSAGE.ERROR_500;
-    error.status = 500;
-
-    return next(error);
+    throw error;
   }
 };
 
-const getDocumentInS3 = async (userId, documentId, next) => {
+const getDocumentInS3 = async (userId, documentId) => {
   try {
-    await s3ConfigSetup(next);
+    await s3ConfigSetup();
 
     const pdfInS3 = new GetObjectCommand({
       Bucket: CONFIG.S3_BUCKET_NAME,
@@ -76,20 +70,17 @@ const getDocumentInS3 = async (userId, documentId, next) => {
 
     return buffer;
   } catch (error) {
-    error.message = ERRORMESSAGE.ERROR_500;
-    error.status = 500;
-
-    return next(error);
+    throw error;
   }
 };
 
-const getFontInS3 = async (fontId, next) => {
+const getFontInS3 = async (fontId) => {
   try {
-    await s3ConfigSetup(next);
+    await s3ConfigSetup();
 
     const fontInS3 = new GetObjectCommand({
       Bucket: CONFIG.S3_BUCKET_NAME,
-      Key: `font/${fontId}.woff2`
+      Key: `font/${fontId}.woff2`,
     });
     const readableStream = await s3.send(fontInS3);
     const arrayBuffer = await readableStream.Body.transformToByteArray();
@@ -97,10 +88,7 @@ const getFontInS3 = async (fontId, next) => {
 
     return buffer;
   } catch (error) {
-    error.message = ERRORMESSAGE.ERROR_500;
-    error.status = 500;
-
-    return next(error);
+    throw error;
   }
 };
 

@@ -21,11 +21,15 @@ exports.signIn = async (req, res, next) => {
       .status(201)
       .cookie("accessToken", accessToken, {
         maxAge: 1000 * 60 * 60,
+        sameSite: "None",
         httpOnly: true,
+        secure: true,
       })
       .cookie("refreshToken", refreshToken, {
         maxAge: 1000 * 60 * 60 * 24,
+        sameSite: "None",
         httpOnly: true,
+        secure: true,
       })
       .json({ result: "success", userId: user._id });
   } catch (error) {
